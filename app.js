@@ -85,6 +85,7 @@ const createEngineer = (employee) => {
     }).then((answer) => {
         const engr = new Engineer(employee.name, employees.length + 1, employee.email, answer.github);
         employees.push(engr);
+        console.log(employees);
         askAgain();
     });
 };
@@ -97,6 +98,7 @@ const createIntern = (employee) => {
     }).then((answer) => {
         const newIntern= new Intern(employee.name, employees.length + 1, employee.email, answer.school);
         employees.push(newIntern);
+        console.log(employees);
         askAgain();
     });
 };
@@ -109,30 +111,39 @@ const createManager = (employee) => {
     }).then((answer) => {
         const mgr= new Manager(employee.name, employees.length + 1, employee.email, answer.office);
         employees.push(mgr);
+        console.log(employees);
         askAgain();
     });
 };
 
 //checks if output_dir exists, creates new folder if not
-const checkDir = () => {
+const checkDirAsync = () => {
     return new Promise((resolve, reject) => {
         fs.access(OUTPUT_DIR, fs.F_OK, (err) => {
             if (err) {
-                fs.mkdir(OUTPUT_DIR, true, (err) => {
-                    if(err) {
-                        return reject(err);
-                    }
-                    console.log(`Folder made : ${OUTPUT_DIR}`);
-                    resolve();
-                });
+                makeDirAsync().then(resolve());
+            } else {
+                resolve();
             }
         });
     });
 };
 
+const makeDirAsync = () => {
+    return new Promise((resolve, reject) => {
+        fs.mkdir(OUTPUT_DIR, true, (err) => {
+            if(err) {
+                return reject(err);
+            }
+            console.log(`Folder made : ${OUTPUT_DIR}`);
+            resolve();
+        });
+    })
+};
+
 //writes profile to html file after director is checked and fulfilled
 const outputProfile = (html) => {
-    checkDir().then(() => {
+    checkDirAsync().then(() => {
         fs.writeFile(outputPath, html, (err) => {
             if (err) {
                 return err;
