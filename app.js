@@ -1,3 +1,11 @@
+//profile generator
+
+//prompts for employee information
+//asks questions based on employee type
+//reders html cards for team profiles
+//checks if file path exists, creates new folder if not
+//writes to html file
+
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
@@ -53,6 +61,7 @@ const getEmployee = () => {
 
 getEmployee();
 
+//asks if user wants to add additional employee, renders html if not
 const askAgain = () => {
     inquirer.prompt({
         name: "continue",
@@ -63,7 +72,6 @@ const askAgain = () => {
             getEmployee();
         } else {
             let html = render(employees);
-            console.log(html);
             outputProfile(html);
         }
     });
@@ -105,6 +113,7 @@ const createManager = (employee) => {
     });
 };
 
+//checks if output_dir exists, creates new folder if not
 const checkDir = () => {
     return new Promise((resolve, reject) => {
         fs.access(OUTPUT_DIR, fs.F_OK, (err) => {
@@ -114,21 +123,21 @@ const checkDir = () => {
                         return reject(err);
                     }
                     console.log(`Folder made : ${OUTPUT_DIR}`);
-                    return resolve();
+                    resolve();
                 });
             }
         });
     });
 };
 
-
-async function outputProfile(html) {
-    try {
-        const directoryMade = await checkDir();
-        console.log(directoryMade);
-        console.log("promise fulfilled");
-
-    } catch (err) {
-        console.log(err);
-    }
+//writes profile to html file after director is checked and fulfilled
+const outputProfile = (html) => {
+    checkDir().then(() => {
+        fs.writeFile(outputPath, html, (err) => {
+            if (err) {
+                return err;
+            }
+            console.log(`Profile has been made at: ${outputPath}`);
+        });
+    });
 };
