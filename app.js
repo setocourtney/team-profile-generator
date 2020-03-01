@@ -62,7 +62,9 @@ const askAgain = () => {
         if(answer.continue) {
             getEmployee();
         } else {
-            return;
+            let html = render(employees);
+            console.log(html);
+            outputProfile(html);
         }
     });
 };
@@ -71,11 +73,10 @@ const createEngineer = (employee) => {
     inquirer.prompt({
         name: "github",
         type: "input",
-        message: "What is the Employee\'s GitHub Profile?"
+        message: "What is the Employee\'s GitHub username?"
     }).then((answer) => {
         const engr = new Engineer(employee.name, employees.length + 1, employee.email, answer.github);
         employees.push(engr);
-        console.log(employees);
         askAgain();
     });
 };
@@ -88,7 +89,6 @@ const createIntern = (employee) => {
     }).then((answer) => {
         const newIntern= new Intern(employee.name, employees.length + 1, employee.email, answer.school);
         employees.push(newIntern);
-        console.log(employees);
         askAgain();
     });
 };
@@ -101,7 +101,34 @@ const createManager = (employee) => {
     }).then((answer) => {
         const mgr= new Manager(employee.name, employees.length + 1, employee.email, answer.office);
         employees.push(mgr);
-        console.log(employees);
         askAgain();
     });
+};
+
+const checkDir = () => {
+    return new Promise((resolve, reject) => {
+        fs.access(OUTPUT_DIR, fs.F_OK, (err) => {
+            if (err) {
+                fs.mkdir(OUTPUT_DIR, true, (err) => {
+                    if(err) {
+                        return reject(err);
+                    }
+                    console.log(`Folder made : ${OUTPUT_DIR}`);
+                    return resolve();
+                });
+            }
+        });
+    });
+};
+
+
+async function outputProfile(html) {
+    try {
+        const directoryMade = await checkDir();
+        console.log(directoryMade);
+        console.log("promise fulfilled");
+
+    } catch (err) {
+        console.log(err);
+    }
 };
